@@ -73,16 +73,15 @@ def train(config):
                     acc =(int_age == int_age_pred).sum().item()/config.batch_size
                     total_acc += acc
 
+                    train_loader_pbar.set_description(
+                        '[training] epoch: %d/%d, ' % (epoch+1, config.num_epochs) +
+                        'train_loss: %.3f, ' % (train_loss/total) +
+                        'Accuracy: %.3f, ' % (total_acc/total) +
+                        'predicted: %d, ' % (torch.argmax(age_pred[0]) * 5 + config.min) +
+                        'Answer: %d' % (torch.argmax(age[0]) * 5 + config.min)
+                    )
 
-                train_loss_record.append(train_loss/total)
-                train_loader_pbar.set_description(
-                    '[training] epoch: %d/%d, ' % (epoch+1, config.num_epochs) +
-                    'train_loss: %.3f, ' % (train_loss/total) +
-                    'Accuracy: %.3f, ' % (total_acc/total) +
-                    'predicted: %d, ' % (torch.argmax(age_pred[0]) * 5 + config.min) +
-                    'Answer: %d' % (torch.argmax(age[0]) * 5 + config.min)
-                )
-
+                train_loss_record.append(train_loss / total)
                 if config.model_save == True:
                         model_out_path = config.model_save_path + str(epoch) + '.pth'
                         state ={'epoch': epoch, 'model': model, 'optimizer': optimizer}
@@ -115,14 +114,15 @@ def train(config):
                     acc = (int_age == int_age_pred).sum().item() / config.batch_size
                     total_acc += acc
 
+                    test_loader_pbar.set_description(
+                        '[testing] epoch: %d/%d, ' % (epoch+1, config.num_epochs) +
+                        'valid_loss: %.3f, ' % (test_loss / total) +
+                        'Accuracy: %.3f, ' % (total_acc / total) +
+                        'predicted: %d, ' % (torch.argmax(age_pred[0]) * 5 + config.min) +
+                        'Answer: %d ' % (torch.argmax(age[0]) * 5 + config.min)
+                    )
+
                 test_loss_record.append(test_loss / total)
-                test_loader_pbar.set_description(
-                    '[testing] epoch: %d/%d, ' % (epoch+1, config.num_epochs) +
-                    'valid_loss: %.3f, ' % (test_loss / total) +
-                    'Accuracy: %.3f, ' % (total_acc / total) +
-                    'predicted: %d, ' % (torch.argmax(age_pred[0]) * 5 + config.min) +
-                    'Answer: %d ' % (torch.argmax(age[0]) * 5 + config.min)
-                )
 
     ## Plot the history of train/test loss
     plt.plot(train_loss_record, label='Training loss')
